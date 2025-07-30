@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
-userSchema.static.hashPassword = async function(password){
+userSchema.statics.hashPassword = async function(password){
     return await bcrypt.hash(password, 10);
 }
 
@@ -26,8 +26,8 @@ userSchema.methods.isValidPassword = async function(password){
     return await bcrypt.compare(password,this.password);
 }
 
-userSchema.methods.generateJwt = function(){
-    return jwt.sign({email: this.email}, process.env.JWT_SERECT);
+userSchema.methods.generateJWT = function(){
+    return jwt.sign({email: this.email}, process.env.JWT_SECRET);
 }
 
 const User = mongoose.model('user',userSchema);
