@@ -63,7 +63,7 @@ const Home = () => {
 
                             <div className="flex gap-2">
                                 <p> <small> <i className="ri-user-line"></i> Collaborators</small> :</p>
-                                {project.users.length}
+                                {project.user.length}
                             </div>
 
                         </div>
