@@ -142,8 +142,8 @@ const Project = () => {
         </section>
 
         {isModalOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-            <div className="bg-white p-4 rounded-md w-96 max-w-full relative">
+          <div className="fixed inset-0 bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white bg-opacity-95 backdrop-blur-md p-6 rounded-xl shadow-[0_0_20px_rgba(0,0,0,0.2)] w-96 max-w-full relative">
               <header className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold">Select User</h2>
                 <button onClick={() => setIsModalOpen(false)} className="p-2">
