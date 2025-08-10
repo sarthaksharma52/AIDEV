@@ -1,7 +1,11 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "../config/axios";
-import { initializeSocket, sendMessage, receieveMessage } from '../config/socket';
+import {
+  initializeSocket,
+  sendMessage,
+  receieveMessage,
+} from "../config/socket";
 import { UserContext } from "../context/user.context";
 
 const Project = () => {
@@ -11,9 +15,10 @@ const Project = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedUserId, setSelectedUserId] = useState([]); // Changed to Array
   const [project, setProject] = useState(location.state.project);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
+  const messageBox = React.createRef();
 
-  const { user } = useContext(UserContext); 
+  const { user } = useContext(UserContext);
 
   const [users, setUsers] = useState([]);
 
@@ -32,15 +37,6 @@ const Project = () => {
       });
   }
 
-  const send = () => {
-    console.log(user)
-
-    sendMessage('project-message', {
-      message,
-      sender: user._id
-    });
-  }
-
   const handleUserClick = (id) => {
     setSelectedUserId((prevSelectedUserId) => {
       const newSelectedUserId = new Set(prevSelectedUserId);
@@ -56,8 +52,9 @@ const Project = () => {
   useEffect(() => {
     initializeSocket(project._id);
 
-    receieveMessage('project-message', data => {
+    receieveMessage("project-message", (data) => {
       console.log(data);
+      appendIncomingMessage(data);
     });
 
     axios
@@ -80,6 +77,72 @@ const Project = () => {
       });
   }, []);
 
+  const send = () => {
+    if (!message.trim()) return;
+
+    const messageObj = {
+      message,
+      sender: user,
+    };
+
+    sendMessage("project-message", messageObj); // send to server
+    appendOutgoingMessage(messageObj); // show immediately in UI
+    setMessage(""); // clear input
+  };
+
+  function appendIncomingMessage(messageObject) {
+    const messageBox = document.querySelector(".message-box");
+
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add(
+      "max-w-56",
+      "message",
+      "flex",
+      "flex-col",
+      "p-2",
+      "bg-slate-50",
+      "w-fit",
+      "rounded-md"
+    );
+    messageDiv.innerHTML = `
+      <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
+      <p class='text-sm text-black'>${messageObject.message}</p>
+    `;
+
+    messageBox.appendChild(messageDiv);
+
+    scrollToBottom();
+  }
+
+  function appendOutgoingMessage(messageObject) {
+    const messageBox = document.querySelector(".message-box");
+
+    const messageDiv = document.createElement("div");
+    messageDiv.classList.add(
+      "ml-auto",
+      "max-w-56",
+      "message",
+      "flex",
+      "flex-col",
+      "p-2",
+      "bg-slate-50",
+      "w-fit",
+      "rounded-md"
+    );
+    messageDiv.innerHTML = `
+      <small class='opacity-65 text-xs'>${messageObject.sender.email}</small>
+      <p class='text-sm text-black'>${messageObject.message}</p>
+    `;
+
+    messageBox.appendChild(messageDiv);
+
+    scrollToBottom();
+  }
+
+  function scrollToBottom() {
+    messageBox.current.scrollTop = messageBox.current.scrollHeight
+}
+
   return (
     <div>
       <main className="h-screen w-screen flex">
@@ -97,32 +160,20 @@ const Project = () => {
             </button>
           </header>
 
-          <div className="conversation-area flex-grow flex flex-col">
-            <div className="message-box p-1 flex-grow flex flex-col gap-1">
-              <div className="max-w-56 message flex flex-col p-2 bg-slate-50 w-fit rounded-md ">
-                <small className="opacity-65 text-xs">example@gmail.com</small>
-                <p className="text-sm text-black">
-                  Lorem ipsum dolor sit amet.
-                </p>
-              </div>
-              <div className="ml-auto max-w-56 message flex flex-col p-2 bg-slate-50 w-fit rounded-md">
-                <small className="opacity-65 text-xs">example@gmail.com</small>
-                <p className="text-sm text-black">
-                  Lorem ipsum dolor sit amet.
-                </p>
-              </div>
-            </div>
-            <div className="inputField w-full flex">
+          <div className="conversation-area pt-6 pb-14 flex-grow flex flex-col h-full relative">
+            <div
+              ref={messageBox}
+              className="message-box p-1 flex-grow flex flex-col gap-1 overflow-auto max-h-full scrollbar-hide"
+            ></div>
+            <div className="inputField w-full flex absolute bottom-0">
               <input
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                className="p-2 px-4 border-none outline-none bg-white flex-grow"
+                className="p-4 px-4 border-none outline-none bg-white flex-grow"
                 type="text"
                 placeholder="enter message"
               />
-              <button
-                onClick={send}
-                className="px-5 bg-slate-950 text-white">
+              <button onClick={send} className="px-5 bg-slate-950 text-white">
                 <i className="ri-send-plane-fill"></i>
               </button>
             </div>
@@ -134,9 +185,7 @@ const Project = () => {
             } top-0 bg-slate-50`}
           >
             <header className="flex justify-between items-center px-4 p-2 bg-slate-200">
-              <h1 className="font-semibold text-lg">
-                Collaborators
-              </h1>
+              <h1 className="font-semibold text-lg">Collaborators</h1>
               <button onClick={() => setIsSidePanelOpen(!isSidePanelOpen)}>
                 <i className="ri-close-fill"></i>
               </button>
@@ -146,7 +195,10 @@ const Project = () => {
               {project.user &&
                 project.user.map((user) => {
                   return (
-                    <div key={user._id} className="user flex gap-2 items-center cursor-pointer hover:bg-slate-200 p-2">
+                    <div
+                      key={user._id}
+                      className="user flex gap-2 items-center cursor-pointer hover:bg-slate-200 p-2"
+                    >
                       <div className="aspect-square rounded-full w-8 h-8 flex items-center justify-center bg-slate-600 relative">
                         <i className="ri-user-fill text-white text-sm"></i>
                       </div>
