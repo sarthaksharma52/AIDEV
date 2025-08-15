@@ -19,6 +19,7 @@ function SyntaxHighlightedCode(props) {
   React.useEffect(() => {
     if (ref.current && props.className?.includes("lang-") && window.hljs) {
       window.hljs.highlightElement(ref.current);
+
       // hljs won't reprocess the element unless this attribute is removed
       ref.current.removeAttribute("data-highlighted");
     }
@@ -35,7 +36,7 @@ const Project = () => {
   const [selectedUserId, setSelectedUserId] = useState([]); // Changed to Array
   const [project, setProject] = useState(location.state.project);
   const [message, setMessage] = useState("");
-  const messageBox = useRef(null); // ✅ useRef to keep a stable ref
+  const messageBox = React.createRef();
 
   const { user } = useContext(UserContext);
   const [messages, setMessages] = useState([]); // New state variable for messages
@@ -79,29 +80,29 @@ const Project = () => {
   useEffect(() => {
     initializeSocket(project._id);
 
-    getWebContainer().then((container) => {
-      setWebContainer(container);
-      console.log("container started");
-
-      // Move receiveMessage here so webContainer is guaranteed to exist
-      receieveMessage("project-message", (data) => {
-        let parsed;
-        try {
-          parsed = JSON.parse(data.message);
-        } catch {
-          parsed = data.message;
-        }
-
-        // ✅ Only mount if container exists and a valid fileTree is present
-        if (container && parsed && parsed.fileTree) {
-          container.mount(parsed.fileTree).catch(console.error);
-        }
-
-        if (parsed && parsed.fileTree) {
-          setFileTree(parsed.fileTree);
-        }
-        setMessages((prevMessages) => [...prevMessages, data]);
+    if (!webContainer) {
+      getWebContainer().then((container) => {
+        setWebContainer(container);
+        console.log("container started");
       });
+    }
+
+    receieveMessage("project-message", (data) => {
+      let message;
+      try {
+        message = JSON.parse(data.message);
+      } catch {
+        message = data.message; // fallback to raw string if not JSON
+      }
+
+      webContainer?.mount(message.fileTree);
+
+      console.log(message);
+
+      if (message.fileTree) {
+        setFileTree(message.fileTree);
+      }
+      setMessages((prevMessages) => [...prevMessages, data]);
     });
 
     axios
@@ -143,13 +144,7 @@ const Project = () => {
   };
 
   function WriteAiMessage(message) {
-    // ✅ Safer JSON parsing so bad payloads don't crash the UI
-    let messageObject;
-    try {
-      messageObject = JSON.parse(message);
-    } catch {
-      messageObject = { text: String(message || "") };
-    }
+    const messageObject = JSON.parse(message);
 
     return (
       <div className="overflow-auto bg-slate-950 text-white rounded-sm p-2">
@@ -166,9 +161,7 @@ const Project = () => {
   }
 
   function scrollToBottom() {
-    if (messageBox.current) {
-      messageBox.current.scrollTop = messageBox.current.scrollHeight; // ✅ guard
-    }
+    messageBox.current.scrollTop = messageBox.current.scrollHeight;
   }
 
   function saveFileTree(ft) {
@@ -309,59 +302,43 @@ const Project = () => {
               <div className="action flex gap-2">
                 <button
                   onClick={async () => {
-                    // ✅ Guard: don't run until container exists
-                    if (!webContainer) {
-                      console.warn("WebContainer not ready yet.");
-                      return;
+                    await webContainer.mount(fileTree);
+
+                    const installProcess = await webContainer.spawn("npm", [
+                      "install",
+                    ]);
+
+                    installProcess.output.pipeTo(
+                      new WritableStream({
+                        write(chunk) {
+                          console.log(chunk);
+                        },
+                      })
+                    );
+                    if (runProcess) {
+                      runProcess.kill();
                     }
-                    try {
-                      // ✅ Only mount when we actually have a fileTree object
-                      if (fileTree && Object.keys(fileTree).length > 0) {
-                        await webContainer.mount(fileTree);
-                      }
 
-                      const installProcess = await webContainer.spawn("npm", [
-                        "install",
-                      ]);
+                    let tempRunProcess = await webContainer.spawn("npm", [
+                      "start",
+                    ]);
 
-                      installProcess.output.pipeTo(
-                        new WritableStream({
-                          write(chunk) {
-                            console.log(chunk);
-                          },
-                        })
-                      );
+                    tempRunProcess.output.pipeTo(
+                      new WritableStream({
+                        write(chunk) {
+                          console.log(chunk);
+                        },
+                      })
+                    );
 
-                      if (runProcess) {
-                        runProcess.kill();
-                      }
+                    setRunProcess(tempRunProcess);
 
-                      let tempRunProcess = await webContainer.spawn("npm", [
-                        "start",
-                      ]);
-
-                      tempRunProcess.output.pipeTo(
-                        new WritableStream({
-                          write(chunk) {
-                            console.log(chunk);
-                          },
-                        })
-                      );
-
-                      setRunProcess(tempRunProcess);
-
-                      webContainer.on("server-ready", (port, url) => {
-                        console.log(port, url);
-                        setIframeUrl(url);
-                      });
-                    } catch (err) {
-                      console.error(err);
-                    }
+                    webContainer.on("server-ready", (port, url) => {
+                      console.log(port, url);
+                      setIframeUrl(url);
+                    });
                   }}
-                  className={`p-2 px-4 ${
-                    webContainer ? "bg-slate-300 text-white" : "bg-gray-400 text-gray-200 cursor-not-allowed"
-                  }`}
-                  disabled={!webContainer} // ✅ Button disabled until ready
+                  className="p-2 px-4 bg-slate-300 text-white"
                 >
                   Run
                 </button>
