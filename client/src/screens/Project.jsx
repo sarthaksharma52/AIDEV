@@ -78,53 +78,40 @@ const Project = () => {
   };
 
   useEffect(() => {
-    initializeSocket(project._id);
+  initializeSocket(project._id);
 
-    if (!webContainer) {
-      getWebContainer().then((container) => {
-        setWebContainer(container);
-        console.log("container started");
-      });
-    }
+  getWebContainer().then((container) => {
+    setWebContainer(container);
+    console.log("container started");
 
+    // Move receiveMessage here so webContainer is guaranteed to exist
     receieveMessage("project-message", (data) => {
       let message;
       try {
         message = JSON.parse(data.message);
       } catch {
-        message = data.message; // fallback to raw string if not JSON
+        message = data.message;
       }
 
-      webContainer?.mount(message.fileTree);
-
-      console.log(message);
+      container.mount(message.fileTree); // container is ready here
 
       if (message.fileTree) {
         setFileTree(message.fileTree);
       }
       setMessages((prevMessages) => [...prevMessages, data]);
     });
+  });
 
-    axios
-      .get(`/projects/get-project/${location.state.project._id}`)
-      .then((res) => {
-        console.log(res.data.project);
-        setProject(res.data.project);
-        setFileTree(res.data.project.fileTree || {}); //  || {}
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+  axios.get(`/projects/get-project/${location.state.project._id}`).then((res) => {
+    setProject(res.data.project);
+    setFileTree(res.data.project.fileTree || {});
+  });
 
-    axios
-      .get("/users/all")
-      .then((res) => {
-        setUsers(res.data.users); // <-- Setting 'users'
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  }, []);
+  axios.get("/users/all").then((res) => {
+    setUsers(res.data.users);
+  });
+}, []);
+
 
   useEffect(() => {
     scrollToBottom();
