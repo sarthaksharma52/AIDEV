@@ -30,7 +30,9 @@ Think of it as **GitHub + Chat + AI-powered coding + Cloud IDE** in one place.
 ### Prerequisites
 Make sure you have the following installed:
 - [Node.js](https://nodejs.org/)  
-- [MongoDB](https://www.mongodb.com/)  
+- ![Made with Express](https://img.shields.io/badge/Backend-Express-black)
+- [MongoDB](https://www.mongodb.com/)
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)  
 - API Key for OpenAI / Gemini  
 
 ### Installation
@@ -46,8 +48,6 @@ npm install
 
 # Start the development server
 npm run dev
-📸 Screenshots
-(Add your project screenshots here)
 
 🤝 Contributing
 Contributions are welcome!
@@ -62,9 +62,7 @@ Open a Pull Request
 
 📜 License
 This project is licensed under the MIT License.
-
-📜 License
-This project is licensed under the MIT License.
+![License](https://img.shields.io/badge/License-MIT-green.svg)
 
 👤 Author
 Sarthak Sharma
