@@ -1,13 +1,8 @@
-# 🚀 AIDEV – AI-Powered Collaborative Development Platform  
+# 🚀 AIDEV – AI-Powered Collaborative Development Platform
 
-> **Collaborate. Code. Chat. Run.** – All in one place with AI assistance.  
-
-![License](https://img.shields.io/badge/License-MIT-green.svg)  
-![Made with React](https://img.shields.io/badge/Frontend-React-blue)  
-![Made with Express](https://img.shields.io/badge/Backend-Express-black)  
-![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)  
-![WebSockets](https://img.shields.io/badge/Realtime-WebSockets-orange)  
-![AI Powered](https://img.shields.io/badge/AI-OpenAI/Gemini-purple)  
+AIDEV is a web application where developers can **collaborate on projects in real-time**, powered by AI assistance.  
+Users can create projects, add collaborators, chat, generate code using `@ai`, and even run servers inside the app.  
+Think of it as **GitHub + Chat + AI-powered coding + Cloud IDE** in one place.
 
 ---
 
@@ -33,6 +28,7 @@
 ## 🚀 Getting Started
 
 ### Prerequisites
+Make sure you have the following installed:
 - [Node.js](https://nodejs.org/)  
 - [MongoDB](https://www.mongodb.com/)  
 - API Key for OpenAI / Gemini  
@@ -63,6 +59,9 @@ Create a new branch (feature/your-feature)
 Commit your changes
 
 Open a Pull Request
+
+📜 License
+This project is licensed under the MIT License.
 
 📜 License
 This project is licensed under the MIT License.
