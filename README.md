@@ -1,8 +1,13 @@
-# 🚀 AIDEV – AI-Powered Collaborative Development Platform
+# 🚀 AIDEV – AI-Powered Collaborative Development Platform  
 
-AIDEV is a web application where developers can **collaborate on projects in real-time**, powered by AI assistance.  
-Users can create projects, add collaborators, chat, generate code using `@ai`, and even run servers inside the app.  
-Think of it as **GitHub + Chat + AI-powered coding + Cloud IDE** in one place.
+> **Collaborate. Code. Chat. Run.** – All in one place with AI assistance.  
+
+![License](https://img.shields.io/badge/License-MIT-green.svg)  
+![Made with React](https://img.shields.io/badge/Frontend-React-blue)  
+![Made with Express](https://img.shields.io/badge/Backend-Express-black)  
+![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)  
+![WebSockets](https://img.shields.io/badge/Realtime-WebSockets-orange)  
+![AI Powered](https://img.shields.io/badge/AI-OpenAI/Gemini-purple)  
 
 ---
 
@@ -28,7 +33,6 @@ Think of it as **GitHub + Chat + AI-powered coding + Cloud IDE** in one place.
 ## 🚀 Getting Started
 
 ### Prerequisites
-Make sure you have the following installed:
 - [Node.js](https://nodejs.org/)  
 - [MongoDB](https://www.mongodb.com/)  
 - API Key for OpenAI / Gemini  
@@ -68,14 +72,6 @@ Sarthak Sharma
 
 GitHub: sarthaksharma52
 
-Portfolio: [Your Portfolio Link]
+Portfolio: https://sarthak-portfolio.onrender.com/
 
-LinkedIn: [Your LinkedIn Link]
-
-yaml
-Copy
-Edit
-
----
-
-Do you want me to also make a **short tagline + badges (tech stack, license, stars, etc.)** at the top to give it a modern look (like pro open-source projects)?
+LinkedIn: https://www.linkedin.com/in/sarthak-sharma-778b28257/
