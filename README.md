@@ -16,7 +16,7 @@ Think of it as **GitHub + Chat + AI-powered coding + Cloud IDE** in one place.
 ---
 
 ## 🛠️ Tech Stack
-- **Frontend:** React.js (Vite)  
+- **Frontend:** React.js (Vite) , Tailwind
 - **Backend:** Node.js, Express.js  
 - **Database:** MongoDB  
 - **Real-time:** WebSockets / Socket.io  
