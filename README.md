@@ -3,7 +3,7 @@
 AIDEV is a web application where developers can **collaborate on projects in real-time**, powered by AI assistance.  
 Users can create projects, add collaborators, chat, generate code using `@ai`, and even run servers inside the app.  
 Think of it as **GitHub + Chat + AI-powered coding + Cloud IDE** in one place.
-
+  
 ---
 
 ## ✨ Features
